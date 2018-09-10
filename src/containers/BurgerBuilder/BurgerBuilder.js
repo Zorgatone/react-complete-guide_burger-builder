@@ -6,6 +6,7 @@ import BuildControls from "../../components/Burger/BuildControls";
 import Modal from "../../components/UI/Modal";
 import OrderSummary from "../../components/Burger/OrderSummary";
 import Spinner from "../../components/UI/Spinner";
+import WithErrorHandler from "../../hoc/WithErrorHandler";
 
 import Aux from "../../hoc/Aux";
 
@@ -178,4 +179,4 @@ class BurgerBuilder extends Component {
   }
 }
 
-export default BurgerBuilder;
+export default WithErrorHandler(BurgerBuilder, axios);
