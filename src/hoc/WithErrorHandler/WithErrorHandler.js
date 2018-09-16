@@ -9,16 +9,14 @@ const WithErrorHandler = (WrappedComponent, axios) =>
       super(props);
 
       this.state = {
-        error: null,
-        requestInterceptor: null,
-        responseInterceptor: null
+        error: null
       };
 
       this.errorConfirmedHandler = this.errorConfirmedHandler.bind(this);
     }
 
     componentWillMount() {
-      const requestInterceptor = axios.interceptors.request.use(
+      this.reqInterceptor = axios.interceptors.request.use(
         request => {
           this.setState({ error: null });
           return request;
@@ -29,7 +27,7 @@ const WithErrorHandler = (WrappedComponent, axios) =>
         }
       );
 
-      const responseInterceptor = axios.interceptors.response.use(
+      this.resInterceptor = axios.interceptors.response.use(
         response => {
           this.setState({ error: null });
           return response;
@@ -39,20 +37,20 @@ const WithErrorHandler = (WrappedComponent, axios) =>
           return Promise.reject(error);
         }
       );
-
-      this.setState({
-        requestInterceptor: requestInterceptor,
-        responseInterceptor: responseInterceptor
-      });
     }
 
     componentWillUnmount() {
+      console.log(
+        "[WithErrorHandler] will Unmount",
+        this.reqInterceptor,
+        this.resInterceptor
+      );
       if (this.state.requestInterceptor) {
-        axios.interceptors.request.eject(this.state.requestInterceptor);
+        axios.interceptors.request.eject(this.reqInterceptor);
       }
 
       if (this.state.responseInterceptor) {
-        axios.interceptors.request.eject(this.state.requestInterceptor);
+        axios.interceptors.request.eject(this.reqInterceptor);
       }
     }
 
