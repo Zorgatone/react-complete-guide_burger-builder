@@ -9,12 +9,13 @@ const Input = ({
   label,
   changed,
   invalid,
-  shouldValidate
+  shouldValidate,
+  touched
 }) => {
   let inputElement = null;
   const inputClasses = [classes.InputElement];
 
-  if (invalid && shouldValidate) {
+  if (invalid && shouldValidate && touched) {
     inputClasses.push(classes.Invalid);
   }
 
