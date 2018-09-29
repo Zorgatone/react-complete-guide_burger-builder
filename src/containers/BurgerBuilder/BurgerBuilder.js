@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 
+import * as actionTypes from "../../store/actions";
 import axios from "../../axios-orders";
 import Burger from "../../components/Burger";
 import BuildControls from "../../components/Burger/BuildControls";
@@ -10,95 +12,39 @@ import WithErrorHandler from "../../hoc/WithErrorHandler";
 
 import Aux from "../../hoc/Aux";
 
-const INGREDIENT_PRICES = {
-  salad: 0.5,
-  bacon: 0.4,
-  cheese: 1.3,
-  meat: 0.7
-};
-
 class BurgerBuilder extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      ingredients: null,
-      totalPrice: 4,
-      purchasable: false,
       purchasing: false,
       loading: false,
       error: false
     };
 
-    this.updatePurchaseState = this.updatePurchaseState.bind(this);
-    this.addIngredientHandler = this.addIngredientHandler.bind(this);
-    this.removeIngredientHandler = this.removeIngredientHandler.bind(this);
     this.purchaseHandler = this.purchaseHandler.bind(this);
     this.purchaseCancelHandler = this.purchaseCancelHandler.bind(this);
     this.purchaseContinueHandler = this.purchaseContinueHandler.bind(this);
   }
 
   componentDidMount() {
-    axios
-      .get("https://react-my-burger-tomz.firebaseio.com/ingredients.json")
-      .then(response => {
-        this.setState({ ingredients: response.data });
-      })
-      .catch(error => {
-        this.setState({ error: error });
-      });
+    console.log(this.props);
+    // axios
+    //   .get("https://react-my-burger-tomz.firebaseio.com/ingredients.json")
+    //   .then(response => {
+    //     this.setState({ ingredients: response.data });
+    //   })
+    //   .catch(error => {
+    //     this.setState({ error: error });
+    //   });
   }
 
-  updatePurchaseState() {
-    this.setState(prevState => {
-      const ingredients = {
-        ...prevState.ingredients
-      };
-      const sum = Object.keys(ingredients).reduce((sum, igKey) => {
-        return sum + ingredients[igKey];
-      }, 0);
-      return { purchasable: sum > 0 };
-    });
-  }
+  updatePurchaseState(ingredients) {
+    const sum = Object.keys(ingredients).reduce((sum, igKey) => {
+      return sum + ingredients[igKey];
+    }, 0);
 
-  addIngredientHandler(type) {
-    this.setState(prevState => {
-      const oldCount = prevState.ingredients[type];
-      const updatedCount = oldCount + 1;
-      const updatedIngredients = {
-        ...prevState.ingredients
-      };
-
-      updatedIngredients[type] = updatedCount;
-
-      const priceAddition = INGREDIENT_PRICES[type];
-      const oldPrice = prevState.totalPrice;
-      const newPrice = oldPrice + priceAddition;
-
-      setTimeout(this.updatePurchaseState, 0);
-      return { ingredients: updatedIngredients, totalPrice: newPrice };
-    });
-  }
-
-  removeIngredientHandler(type) {
-    if (this.state.ingredients[type] > 0) {
-      this.setState(prevState => {
-        const oldCount = prevState.ingredients[type];
-        const updatedCount = oldCount - 1;
-        const updatedIngredients = {
-          ...prevState.ingredients
-        };
-
-        updatedIngredients[type] = updatedCount;
-
-        const priceDeduction = INGREDIENT_PRICES[type];
-        const oldPrice = prevState.totalPrice;
-        const newPrice = oldPrice - priceDeduction;
-
-        setTimeout(this.updatePurchaseState, 0);
-        return { ingredients: updatedIngredients, totalPrice: newPrice };
-      });
-    }
+    return sum > 0;
   }
 
   purchaseHandler() {
@@ -110,21 +56,12 @@ class BurgerBuilder extends Component {
   }
 
   purchaseContinueHandler() {
-    const queryParams = new URLSearchParams();
-    for (const key of Object.keys(this.state.ingredients)) {
-      queryParams.set(key, this.state.ingredients[key]);
-    }
-    queryParams.set("price", this.state.totalPrice);
-
-    this.props.history.push({
-      pathname: "/checkout",
-      search: queryParams.toString()
-    });
+    this.props.history.push("/checkout");
   }
 
   render() {
     const disabledInfo = {
-      ...this.state.ingredients
+      ...this.props.ings
     };
 
     for (let key of Object.keys(disabledInfo)) {
@@ -139,26 +76,26 @@ class BurgerBuilder extends Component {
 
     let orderSummary = null;
 
-    if (this.state.ingredients) {
+    if (this.props.ings) {
       burger = (
         <Aux>
-          <Burger ingredients={this.state.ingredients} />
+          <Burger ingredients={this.props.ings} />
           <BuildControls
             ordered={this.purchaseHandler}
-            price={this.state.totalPrice}
-            ingredientAdded={this.addIngredientHandler}
-            ingredientRemoved={this.removeIngredientHandler}
+            price={this.props.price}
+            ingredientAdded={this.props.onIngredientAdded}
+            ingredientRemoved={this.props.onIngredientRemoved}
             disabled={disabledInfo}
-            purchasable={this.state.purchasable}
+            purchasable={this.updatePurchaseState(this.props.ings)}
           />
         </Aux>
       );
       orderSummary = (
         <OrderSummary
-          price={this.state.totalPrice}
+          price={this.props.price}
           purchaseCancelled={this.purchaseCancelHandler}
           purchaseContinued={this.purchaseContinueHandler}
-          ingredients={this.state.ingredients}
+          ingredients={this.props.ings}
         />
       );
     }
@@ -181,4 +118,25 @@ class BurgerBuilder extends Component {
   }
 }
 
-export default WithErrorHandler(BurgerBuilder, axios);
+const mapStateToProps = state => ({
+  ings: state.ingredients,
+  price: state.totalPrice
+});
+
+const mapDispatchToProps = dispatch => ({
+  onIngredientAdded: ingredientName =>
+    dispatch({
+      type: actionTypes.ADD_INGREDIENT,
+      ingredientName: ingredientName
+    }),
+  onIngredientRemoved: ingredientName =>
+    dispatch({
+      type: actionTypes.REMOVE_INGREDIENT,
+      ingredientName: ingredientName
+    })
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WithErrorHandler(BurgerBuilder, axios));
