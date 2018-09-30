@@ -1,3 +1,4 @@
+import { updateObject } from "../utils";
 import * as actionTypes from "../actions/actionTypes";
 
 const initialState = {
@@ -13,29 +14,30 @@ const INGREDIENT_PRICES = {
   meat: 0.7
 };
 
+const updateIngredient = (state, action, inc) => ({
+  [action.ingredientName]: state.ingredients[action.ingredientName] + inc
+});
+
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.ADD_INGREDIENT:
-      return {
-        ...state,
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientName]: state.ingredients[action.ingredientName] + 1
-        },
+      return updateObject(state, {
+        ingredients: updateObject(
+          state.ingredients,
+          updateIngredient(state, action, 1)
+        ),
         totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName]
-      };
+      });
     case actionTypes.REMOVE_INGREDIENT:
-      return {
-        ...state,
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientName]: state.ingredients[action.ingredientName] - 1
-        },
+      return updateObject(state, {
+        ingredients: updateObject(
+          state.ingredients,
+          updateIngredient(state, action, -1)
+        ),
         totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName]
-      };
+      });
     case actionTypes.SET_INGREDIENTS:
-      return {
-        ...state,
+      return updateObject(state, {
         ingredients: {
           salad: action.ingredients.salad,
           bacon: action.ingredients.bacon,
@@ -44,12 +46,9 @@ const reducer = (state = initialState, action) => {
         },
         totalPrice: initialState.totalPrice,
         error: false
-      };
+      });
     case actionTypes.FETCH_INGREDIENTS_FAILED:
-      return {
-        ...state,
-        error: true
-      };
+      return updateObject(state, { error: true });
     default:
       return state;
   }
