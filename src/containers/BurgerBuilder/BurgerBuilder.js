@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import * as actionTypes from "../../store/actions";
 import axios from "../../axios-orders";
 import Burger from "../../components/Burger";
 import BuildControls from "../../components/Burger/BuildControls";
@@ -9,6 +8,7 @@ import Modal from "../../components/UI/Modal";
 import OrderSummary from "../../components/Burger/OrderSummary";
 import Spinner from "../../components/UI/Spinner";
 import WithErrorHandler from "../../hoc/WithErrorHandler";
+import * as actions from "../../store/actions";
 
 import Aux from "../../hoc/Aux";
 
@@ -125,15 +125,9 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onIngredientAdded: ingredientName =>
-    dispatch({
-      type: actionTypes.ADD_INGREDIENT,
-      ingredientName: ingredientName
-    }),
+    dispatch(actions.addIngredient(ingredientName)),
   onIngredientRemoved: ingredientName =>
-    dispatch({
-      type: actionTypes.REMOVE_INGREDIENT,
-      ingredientName: ingredientName
-    })
+    dispatch(actions.removeIngredient(ingredientName))
 });
 
 export default connect(
