@@ -16,13 +16,13 @@ const reducer = (state = initialState, action) => {
     case actionTypes.PURCHASE_BURGER_SUCCESS:
       return updateObject(state, { loading: false, purchased: true });
     case actionTypes.PURCHASE_BURGER_FAIL:
-      return updateObject({ loading: false });
+      return updateObject(state, { loading: false });
     case actionTypes.FETCH_ORDERS_START:
-      return updateObject({ loading: true });
+      return updateObject(state, { loading: true });
     case actionTypes.FETCH_ORDERS_SUCCESS:
       return updateObject(state, { loading: false, orders: action.orders });
     case actionTypes.FETCH_ORDERS_FAILED:
-      return updateObject({ loading: false });
+      return updateObject(state, { loading: false });
     default:
       return state;
   }
