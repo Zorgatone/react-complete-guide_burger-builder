@@ -45,12 +45,15 @@ const WithErrorHandler = (WrappedComponent, axios) =>
         this.reqInterceptor,
         this.resInterceptor
       );
-      if (this.state.requestInterceptor) {
+
+      if ("undefined" !== typeof this.reqInterceptor) {
         axios.interceptors.request.eject(this.reqInterceptor);
+        delete this.reqInterceptor;
       }
 
-      if (this.state.responseInterceptor) {
-        axios.interceptors.request.eject(this.reqInterceptor);
+      if ("undefined" !== typeof this.resInterceptor) {
+        axios.interceptors.response.eject(this.resInterceptor);
+        delete this.resInterceptor;
       }
     }
 
