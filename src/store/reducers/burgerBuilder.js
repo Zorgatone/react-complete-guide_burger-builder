@@ -44,7 +44,11 @@ const reducer = (state = initialState, action) => {
           cheese: action.ingredients.cheese,
           meat: action.ingredients.meat
         },
-        totalPrice: initialState.totalPrice,
+        totalPrice: Object.keys(action.ingredients).reduce(
+          (count, key) =>
+            count + action.ingredients[key] * INGREDIENT_PRICES[key],
+          initialState.totalPrice
+        ),
         error: false
       });
     case actionTypes.FETCH_INGREDIENTS_FAILED:
