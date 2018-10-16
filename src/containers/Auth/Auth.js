@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
 
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button";
@@ -135,7 +136,9 @@ class Auth extends Component {
       <p>{this.props.error.message}</p>
     ) : null;
 
-    return (
+    return this.props.isAuthenticated ? (
+      <Redirect to="/" />
+    ) : (
       <div className={classes.Auth}>
         {errorMessage}
         <form onSubmit={this.submitHandler}>
@@ -158,7 +161,8 @@ class Auth extends Component {
 
 const mapStateToProps = state => ({
   loading: state.auth.loading,
-  error: state.auth.error
+  error: state.auth.error,
+  isAuthenticated: !!state.auth.token
 });
 
 const mapDispatchToProps = dispatch => ({
