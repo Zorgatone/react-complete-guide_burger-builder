@@ -40,12 +40,6 @@ const WithErrorHandler = (WrappedComponent, axios) =>
     }
 
     componentWillUnmount() {
-      console.log(
-        "[WithErrorHandler] will Unmount",
-        this.reqInterceptor,
-        this.resInterceptor
-      );
-
       if ("undefined" !== typeof this.reqInterceptor) {
         axios.interceptors.request.eject(this.reqInterceptor);
         delete this.reqInterceptor;

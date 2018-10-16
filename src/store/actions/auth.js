@@ -28,7 +28,6 @@ export const logout = () => {
 };
 
 export const checkAuthTimeout = expirationDate => dispatch => {
-  console.log(expirationDate);
   setTimeout(() => {
     dispatch(logout());
   }, expirationDate * 1000);
@@ -79,8 +78,6 @@ export const authCheckState = () => dispatch => {
     dispatch(logout());
   } else {
     const expirationDate = new Date(localStorage.getItem("expirationDate"));
-
-    console.log(expirationDate);
 
     if (expirationDate > new Date()) {
       const userId = localStorage.getItem("userId");
