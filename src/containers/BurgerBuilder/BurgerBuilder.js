@@ -12,7 +12,7 @@ import * as actions from "../../store/actions";
 
 import Aux from "../../hoc/Aux";
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
   constructor(props) {
     super(props);
 
