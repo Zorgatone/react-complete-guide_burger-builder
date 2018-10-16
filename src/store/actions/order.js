@@ -47,12 +47,17 @@ export const fetchOrdersStart = () => ({
   type: actionTypes.FETCH_ORDERS_START
 });
 
-export const fetchOrders = token => dispatch => {
+export const fetchOrders = (token, userId) => dispatch => {
   dispatch(fetchOrdersStart());
   axios
     .get(
       token
-        ? "/orders.json?" + new URLSearchParams({ auth: token })
+        ? "/orders.json?" +
+          new URLSearchParams({
+            auth: token,
+            orderBy: '"userId"',
+            equalTo: `"${userId}"`
+          })
         : "/orders.json"
     )
     .then(({ data }) => {
