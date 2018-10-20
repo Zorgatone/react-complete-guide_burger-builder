@@ -17,20 +17,18 @@ export const authFail = error => ({
   error: error
 });
 
-export const logout = () => {
-  // localStorage.removeItem("token");
-  // localStorage.removeItem("expirationDate");
-  // localStorage.removeItem("userId");
-  return {
-    type: actionTypes.AUTH_INITIATE_LOGOUT
-  };
-};
+export const logout = () => ({
+  type: actionTypes.AUTH_INITIATE_LOGOUT
+});
 
-export const checkAuthTimeout = expirationDate => dispatch => {
-  setTimeout(() => {
-    dispatch(logout());
-  }, expirationDate * 1000);
-};
+export const logoutSucceed = () => ({
+  type: actionTypes.AUTH_LOGOUT
+});
+
+export const checkAuthTimeout = expirationTime => ({
+  type: actionTypes.AUTH_CHECK_TIMEOUT,
+  expirationTime: expirationTime
+});
 
 export const auth = (email, password, isSignup = true) => dispatch => {
   dispatch(authStart());
